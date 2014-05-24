@@ -2,3 +2,17 @@ Programming challenges https://www.codeeval.com/
 
 Done: 
 BayBridge Challenge https://www.codeeval.com/public_sc/109/
+Robot Movements Challenge https://www.codeeval.com/public_sc/56/
+
+
+(Install utils local dependency:
+
+lein jar
+
+mvn deploy:deploy-file -DgroupId=local -DartifactId=utils \
+  -Dversion=1.0.0 -Dpackaging=jar -Dfile=/home/stephane/Dev/CodeEval/utils/target/utils-0.1.0-SNAPSHOT.jar \
+  -Durl=file:/home/stephane/Dev/maven_repository
+
+:dependencies [[org.clojure/clojure "1.5.1"]
+                 [local/utils "1.0.0"]]
+:repositories {"project" "file:/home/stephane/Dev/maven_repository"}
