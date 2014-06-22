@@ -66,7 +66,7 @@
               overlap? (= sub-seq-new-pad sub-seq-reference)]
           (recur (inc start) (dec end)
             (if overlap? 
-              (if (or (nil? overlap) (> (count (sub-seq-new-pad)) (count overlap)))
+              (if (or (nil? overlap) (> (count sub-seq-new-pad) (count overlap)))
                 sub-seq-new-pad
                 overlap)
               overlap))))))
@@ -79,3 +79,73 @@
         start-pad (pad 0 total (split-by-char smaller))
         reference-pad (pad (- (count smaller) 1) (- (count smaller) 1) (split-by-char bigger))]
     (slide total start-pad reference-pad)))
+
+(defn find-best-match-for-fragment
+  [fragment fragments]
+  (reduce (fn[memo x] 
+            (if (and (not= fragment x) (or (nil? memo) (> (count x) (count (last memo)))))
+              (let [overlap (find-overlap fragment x)]
+                (if (and overlap (> (count overlap) (count (second memo))))
+                  [(split-by-char fragment)  (split-by-char x) overlap]
+                  memo))
+              memo))
+          nil
+          fragments))
+
+
+(defn match-at-start
+  [fragment match]
+  (= match (take (count match) fragment)))
+
+(defn match-at-end
+  [fragment match]
+  (= match (drop (- (count fragment) (count match)) fragment)))
+
+(defn merge-fragments
+  [frag1 frag2 match]
+  (if (= frag1 match)
+    frag2
+    (if (= frag2 match)
+      frag1
+      (if (match-at-start frag1 match)
+        (into (vec frag2) (drop (count match) frag1))
+        (if (match-at-end frag1 match)
+          (into (vec (take (- (count frag1) (count match)) frag1)) frag2))))))
+
+
+(defn find-best-match-for-all-fragments
+  [fragments]
+  (loop [fragmentss fragments best-match nil]
+    (if (empty? fragmentss)
+      best-match
+      (if (or (nil? best-match) (> (count (first fragmentss)) (count (last best-match))))
+        (let [best-match-for-x (find-best-match-for-fragment (first fragmentss) fragmentss)]
+          (if (and (not= nil best-match-for-x) (> (count (last best-match-for-x)) (count (last best-match))))
+            (recur (rest fragmentss) best-match-for-x)
+            (recur (rest fragmentss) best-match)))
+        (recur (rest fragmentss) best-match)))))
+   
+
+(defn remove-best-2
+  [fragments best1 best2]
+  (remove #(or (= (clojure.string/join "" best1) %) (= (clojure.string/join "" best2) %)) fragments))
+
+
+(defn merge-best-in-fragments
+  [fragments best1 best2 match]
+  (let [fragments-without-2-best (remove-best-2 fragments best1 best2)
+        merged (merge-fragments best1 best2 match)
+        new-fragments (conj fragments-without-2-best (clojure.string/join "" merged))]
+    new-fragments))
+
+
+(defn da-vynci
+  [fragments]
+  (loop [fragmentss fragments]
+    (if (= 1 (count fragmentss))
+      fragmentss
+      (let [[best1 best2 match] (find-best-match-for-all-fragments fragmentss)]
+        (recur (merge-best-in-fragments fragmentss best1 best2 match))))))
+
+;(time (da-vynci fragments))
+
