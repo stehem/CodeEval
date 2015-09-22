@@ -1,9 +1,14 @@
-Programming challenges https://www.codeeval.com/
+Programming challenges https://www.codeeval.com/profile/stehem/
 
+old school Java7 (required by CodeEval, no Guava/Lombok  goodies either...)
+HARD Package Problem https://www.codeeval.com/public_sc/114/
+
+
+Clojure
 Done: 
-BayBridge Challenge https://www.codeeval.com/public_sc/109/
-Robot Movements Challenge https://www.codeeval.com/public_sc/56/
-DaVynci Challenge https://www.codeeval.com/public_sc/77/
+HARD BayBridge Challenge https://www.codeeval.com/public_sc/109/
+HARD Robot Movements Challenge https://www.codeeval.com/public_sc/56/
+HARD DaVynci Challenge https://www.codeeval.com/public_sc/77/
 
 
 (Install utils local dependency:
